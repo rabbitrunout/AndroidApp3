@@ -11,41 +11,36 @@ import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class CompassActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var rotationSensor: Sensor? = null
 
-    private lateinit var bearingText: TextView
     private lateinit var compassImage: ImageView
+    private lateinit var bearingText: TextView
 
-    private var currentDegree = 0f
+    private var currentDegree = 0f  // for smooth animation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compass)
 
-        // Toolbar
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Compass"
-
         compassImage = findViewById(R.id.compassImage)
         bearingText = findViewById(R.id.bearingText)
 
+        // Toolbar back button
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbarCompass)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { v, insets ->
-            val sb = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(sb.left, sb.top, sb.right, sb.bottom)
-            insets
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     override fun onResume() {
@@ -60,10 +55,9 @@ class CompassActivity : AppCompatActivity(), SensorEventListener {
         sensorManager.unregisterListener(this)
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-
-    override fun onSensorChanged(event: android.hardware.SensorEvent?) {
+    override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ROTATION_VECTOR) {
+
             val rotationMatrix = FloatArray(9)
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
 
@@ -71,27 +65,24 @@ class CompassActivity : AppCompatActivity(), SensorEventListener {
             SensorManager.getOrientation(rotationMatrix, orientation)
 
             val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
-            val degree = ((azimuth + 360) % 360)
+            val bearing = ((azimuth + 360) % 360)
 
-            bearingText.text = "Heading: ${degree.toInt()}°"
+            bearingText.text = "Heading: ${bearing.toInt()}°"
 
-            val rotateAnimation = RotateAnimation(
+            val rotate = RotateAnimation(
                 currentDegree,
-                -degree,
+                -bearing,
                 Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f
             )
 
-            rotateAnimation.duration = 250
-            rotateAnimation.fillAfter = true
+            rotate.duration = 250
+            rotate.fillAfter = true
 
-            compassImage.startAnimation(rotateAnimation)
-            currentDegree = -degree
+            compassImage.startAnimation(rotate)
+            currentDegree = -bearing
         }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }
