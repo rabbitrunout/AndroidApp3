@@ -7,18 +7,21 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.location.*
 import java.util.Locale
-import android.view.animation.AnimationUtils
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
-
     private var lastLocation: Location? = null
 
     @SuppressLint("MissingInflatedId")
@@ -43,14 +45,22 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Insets for notch / system bars
+        // ---------------------------
+        // CONNECT TOOLBAR!!!
+        // ---------------------------
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = "Child Tracker"
+        // ---------------------------
+
+        // Insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(sb.left, sb.top, sb.right, sb.bottom)
             insets
         }
 
-        // UI elements
+        // UI references
         latlngText = findViewById(R.id.latlngText)
         addressText = findViewById(R.id.addressText)
         shareButton = findViewById(R.id.shareButton)
@@ -58,11 +68,12 @@ class MainActivity : AppCompatActivity() {
         clearHistoryButton = findViewById(R.id.clearHistoryButton)
         sosButton = findViewById(R.id.sosButton)
 
-        // SOS Pulse Animation
+        // SOS pulse animation
         sosButton.startAnimation(AnimationUtils.loadAnimation(this, R.anim.sos_pulse))
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        // Location request setup
         locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
             2000L
@@ -71,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             .setMaxUpdateDelayMillis(3000)
             .build()
 
+        // Callback for location
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { updateLocationUI(it) }
@@ -79,17 +91,23 @@ class MainActivity : AppCompatActivity() {
 
         checkLocationPermission()
 
+        // Buttons
         shareButton.setOnClickListener { shareLocation() }
+
         historyButton.setOnClickListener {
             startActivity(Intent(this, HistoryActivity::class.java))
         }
+
         clearHistoryButton.setOnClickListener {
-            getSharedPreferences("history", MODE_PRIVATE).edit().clear().apply()
+            getSharedPreferences("history", MODE_PRIVATE)
+                .edit().clear().apply()
             Toast.makeText(this, "History cleared", Toast.LENGTH_SHORT).show()
         }
+
         sosButton.setOnClickListener { sendSOS() }
     }
 
+    // ---- Permissions ----
     private fun checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -115,10 +133,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // ---- GPS updating ----
     @SuppressLint("SetTextI18n")
     private fun updateLocationUI(location: Location) {
 
-        // Anti-spam: ignore movements < 10m
+        // Ignore movements <10m
         lastLocation?.let { prev ->
             if (prev.distanceTo(location) < 10) return
         }
@@ -129,17 +148,21 @@ class MainActivity : AppCompatActivity() {
         val lon = "%.6f".format(location.longitude)
 
         latlngText.text = "Latitude: $lat\nLongitude: $lon"
-
         saveLocation(lat, lon)
 
-        val geocoder = Geocoder(this, Locale.getDefault())
-        val addr = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+        try {
+            val geocoder = Geocoder(this, Locale.getDefault())
+            val addr = geocoder.getFromLocation(location.latitude, location.longitude, 1)
 
-        addressText.text =
-            if (!addr.isNullOrEmpty()) addr[0].getAddressLine(0)
-            else "Address not found"
+            addressText.text =
+                if (!addr.isNullOrEmpty()) addr[0].getAddressLine(0)
+                else "Address not found"
+        } catch (e: Exception) {
+            addressText.text = "Address lookup failed"
+        }
     }
 
+    // ---- Save history ----
     private fun saveLocation(lat: String, lon: String) {
         val timestamp = java.text.SimpleDateFormat(
             "MMM dd, yyyy  h:mm a",
@@ -157,7 +180,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun shareLocation() {
         val msg = "${latlngText.text}\n${addressText.text}"
-
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_TEXT, msg)
@@ -179,6 +201,7 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
+    // ---- SOS ----
     private fun sendSOS() {
         val msg =
             "🚨 SOS! I need help!\n\n${latlngText.text}\n${addressText.text}\n\nSent from ChildTracker App"
@@ -189,5 +212,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         startActivity(Intent.createChooser(intent, "Send SOS"))
+    }
+
+    // ---- MENU (Compass) ----
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_compass -> {
+                startActivity(Intent(this, CompassActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
