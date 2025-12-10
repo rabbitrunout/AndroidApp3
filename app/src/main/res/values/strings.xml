@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Child Tracker</string>
+    <string name="latlng_format">Latitude: %1$s\nLongitude: %2$s</string>
+
+</resources>
