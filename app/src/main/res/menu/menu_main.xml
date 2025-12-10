@@ -4,7 +4,8 @@
 
     <item
         android:id="@+id/action_compass"
-        android:title="Compass"
+        android:title="@string/compass"
         android:icon="@drawable/compass"
         app:showAsAction="always" />
+
 </menu>
