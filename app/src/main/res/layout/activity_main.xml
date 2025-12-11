@@ -8,17 +8,18 @@
 
     <!-- Toolbar минимальный -->
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        android:background="#FDE7EF"
-        android:title="Child Tracker"
-        android:titleTextColor="#4A4A4A"
-        android:layout_marginTop="10dp"
-        android:paddingTop="26dp"
-        android:paddingBottom="26dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:background="#FDE7EF"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:titleTextColor="#4A4A4A"
+    app:titleTextAppearance="@style/ToolbarTitleStyle"
+    app:menu="@menu/menu_main" />
+
+
+
 
     <ScrollView
         android:id="@+id/rootLayout"

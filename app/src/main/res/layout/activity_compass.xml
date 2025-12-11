@@ -10,16 +10,16 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:background="#F8DDE5"
-        android:title="Compass"
+        android:layout_height="96dp"
+        android:background="#FDE7EF"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
         android:titleTextColor="#4A4A4A"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="22dp"
-        android:paddingBottom="22dp"
-        app:titleTextAppearance="@style/ToolbarTitleStyle"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:titleTextAppearance="@style/ToolbarTitleStyle" />
+
+
 
 
     <!-- 🧭 Compass background -->
