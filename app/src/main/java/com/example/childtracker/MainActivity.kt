@@ -65,8 +65,7 @@ class MainActivity : AppCompatActivity() {
         locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
             2000L
-        ).setMinUpdateIntervalMillis(1000)
-            .build()
+        ).setMinUpdateIntervalMillis(1000).build()
 
         // GPS callback
         locationCallback = object : LocationCallback() {
@@ -78,12 +77,16 @@ class MainActivity : AppCompatActivity() {
         checkLocationPermission()
 
         // Buttons
-        shareButton.setOnClickListener { shareLocation() }
-        historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
+        historyButton.setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
+
         clearHistoryButton.setOnClickListener {
             getSharedPreferences("history", MODE_PRIVATE).edit().clear().apply()
             Toast.makeText(this, "History cleared", Toast.LENGTH_SHORT).show()
         }
+
+        shareButton.setOnClickListener { shareLocation() }
         sosButton.setOnClickListener { sendSOS() }
     }
 
@@ -94,7 +97,9 @@ class MainActivity : AppCompatActivity() {
             != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST
             )
         } else startLocationUpdates()
     }
@@ -109,7 +114,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateLocationUI(location: Location) {
 
-        // Ignore small changes
+        // Ignore tiny changes
         lastLocation?.let {
             if (it.distanceTo(location) < 10) return
         }
@@ -130,15 +135,19 @@ class MainActivity : AppCompatActivity() {
             else "Address not found"
     }
 
+    // ⭐ Правильный формат: DATE|LAT,LON
     private fun saveLocation(lat: String, lon: String) {
         val timestamp = java.text.SimpleDateFormat("MMM dd, yyyy  h:mm a", Locale.getDefault())
             .format(System.currentTimeMillis())
 
-        val entry = "$lat, $lon — $timestamp"
+        val entry = "$timestamp|$lat, $lon"
 
         val prefs = getSharedPreferences("history", MODE_PRIVATE)
         val old = prefs.getString("locations", "") ?: ""
-        prefs.edit().putString("locations", if (old.isBlank()) entry else "$old\n$entry").apply()
+
+        val updated = if (old.isBlank()) entry else "$old\n$entry"
+
+        prefs.edit().putString("locations", updated).apply()
     }
 
     private fun shareLocation() {
@@ -163,11 +172,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendSOS() {
-        val msg =
-            "🚨 SOS! I need help!\n\n${latlngText.text}\n${addressText.text}\n\nSent from ChildTracker App"
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_TEXT, msg)
+        val msg = "🚨 SOS! I need help!\n\n${latlngText.text}\n${addressText.text}\n\nSent from ChildTracker App"
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, msg)
+        }
         startActivity(Intent.createChooser(intent, "Send SOS"))
     }
 

@@ -6,22 +6,27 @@
     android:orientation="vertical"
     android:background="#F7F6FB">
 
+    <!-- Toolbar минимальный -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
         android:background="#FDE7EF"
         android:title="Child Tracker"
         android:titleTextColor="#4A4A4A"
-        android:paddingTop="28dp"
-        android:paddingBottom="12dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <ScrollView
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <LinearLayout
             android:orientation="vertical"
@@ -29,16 +34,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- CARD -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
                 app:cardCornerRadius="22dp"
                 app:cardElevation="4dp"
-                android:layout_marginBottom="20dp"
                 app:cardBackgroundColor="#FFFFFF">
 
                 <LinearLayout
-                    android:padding="24dp"
+                    android:padding="18dp"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -49,69 +55,68 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="#4A4A4A"
+                        android:layout_marginBottom="10dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_height="wrap_content"/>
 
                     <TextView
                         android:id="@+id/latlngText"
                         android:text="Latitude: --\nLongitude: --"
-                        android:textSize="18sp"
+                        android:textSize="17sp"
                         android:textColor="#4A4A4A"
+                        android:layout_marginBottom="8dp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"/>
+                        android:layout_height="wrap_content"/>
 
                     <TextView
                         android:id="@+id/addressText"
                         android:text="Address: --"
-                        android:textSize="16sp"
+                        android:textSize="15sp"
                         android:textColor="#6A6A6A"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- BUTTONS -->
             <Button
                 android:id="@+id/shareButton"
-                android:layout_width="280dp"
-                android:layout_height="52dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:text="Share My Location"
-                android:textSize="18sp"
-                android:textColor="#4A4A4A"
+                android:textSize="17sp"
                 android:backgroundTint="#BFE3FF"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/historyButton"
-                android:layout_width="280dp"
-                android:layout_height="52dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:text="View History"
-                android:textSize="18sp"
-                android:textColor="#4A4A4A"
+                android:textSize="17sp"
                 android:backgroundTint="#F8C8DC"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/clearHistoryButton"
-                android:layout_width="280dp"
-                android:layout_height="52dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
                 android:text="Clear History"
-                android:textSize="18sp"
-                android:textColor="#4A4A4A"
+                android:textSize="17sp"
                 android:backgroundTint="#E0E0E0"
-                android:layout_marginBottom="26dp"/>
+                android:layout_marginBottom="20dp" />
 
+            <!-- SOS BUTTON (БОЛЬШАЯ) -->
             <Button
                 android:id="@+id/sosButton"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:background="@drawable/sos_circle"
                 android:text="SOS"
-                android:textSize="40sp"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/sos_pastel_bg"
-                android:layout_marginBottom="30dp"/>
+                android:layout_marginBottom="20dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
