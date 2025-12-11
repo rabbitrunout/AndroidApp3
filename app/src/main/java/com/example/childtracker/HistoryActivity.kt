@@ -1,6 +1,7 @@
 package com.example.childtracker
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,9 +17,16 @@ class HistoryActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "History"
+
+        // Обработчик кнопки "назад"
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
+        // RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -27,5 +35,15 @@ class HistoryActivity : AppCompatActivity() {
         val items = raw.split("\n").filter { it.isNotBlank() }
 
         recyclerView.adapter = HistoryAdapter(items)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

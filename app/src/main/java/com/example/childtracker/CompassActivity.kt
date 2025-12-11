@@ -5,6 +5,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
@@ -27,27 +28,30 @@ class CompassActivity : AppCompatActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compass)
 
-        // Toolbar с кнопкой "назад"
+        // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
-        toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        toolbar.setNavigationOnClickListener { finish() }
 
         // UI
         needle = findViewById(R.id.needle)
         headingText = findViewById(R.id.headingText)
         debugText = findViewById(R.id.debugText)
 
+        // Sensors
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         rotationVector = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+    }
 
-        if (rotationVector == null) {
-            debugText.text = "Sensor: NOT AVAILABLE"
-        } else {
-            debugText.text = "Sensor: ready"
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -76,14 +80,10 @@ class CompassActivity : AppCompatActivity(), SensorEventListener {
         val orientation = FloatArray(3)
         SensorManager.getOrientation(rotationMatrix, orientation)
 
-        // Азимут в градусах (0–360)
-        val azimuthRad = orientation[0].toDouble()
-        val azimuthDeg = Math.toDegrees(azimuthRad).toFloat()
+        val azimuthDeg = Math.toDegrees(orientation[0].toDouble()).toFloat()
 
-        // Анимация поворота стрелки
         val rotate = RotateAnimation(
-            currentDegree,
-            -azimuthDeg,                        // минус — чтобы стрелка указывала "вперёд"
+            currentDegree, -azimuthDeg,
             Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f
         )
